@@ -3,18 +3,21 @@ package flat/selenium
 import flat/datastruct
 
 testable class {
-  async test `can create execute basic script and get the return value`() {
-    let driver = Selenium.getDriver(Browser.CHROME)
+  var WebDriver driver
 
-    try {
-      expect(driver.executeScript("return 2")).toBe(2)
-    } finally {
-      driver.quit()
-    }
+  async init_test_class setupDriver() {
+    driver = Selenium.getDriver(Browser.CHROME)
+  }
+
+  async clean_test_class destroyDriver() {
+    driver.quit()
+  }
+
+  async test `can create execute basic script and get the return value`() {
+    expect(driver.executeScript("return 2")).toBe(2)
   }
 
   async test `can create execute basic script and capture single line of output`() {
-    let driver = Selenium.getDriver(Browser.CHROME)
     let script = "|
       const logs = [];
       console.log = function() {
@@ -24,15 +27,10 @@ testable class {
       return logs;
       |"
 
-    try {
-      expect(driver.executeScript(script)).toBe(Array():add(["hey"]))
-    } finally {
-      driver.quit()
-    }
+    expect(driver.executeScript(script)).toBe(Array():add(["hey"]))
   }
 
   async test `can create execute basic script and capture two lines of output`() {
-    let driver = Selenium.getDriver(Browser.CHROME)
     let script = "|
       const logs = [];
       console.log = function() {
@@ -43,19 +41,14 @@ testable class {
       return logs;
       |"
 
-    try {
-      expect(driver.executeScript(script)).toBe(
-        Array()
-          :add(["hey"])
-          :add(["hey2", 3])
-      )
-    } finally {
-      driver.quit()
-    }
+    expect(driver.executeScript(script)).toBe(
+      Array()
+        :add(["hey"])
+        :add(["hey2", 3])
+    )
   }
 
   async test `can create execute basic script and capture single line of output from stdout and stderr`() {
-    let driver = Selenium.getDriver(Browser.CHROME)
     let script = "|
       const logs = [];
       console.log = function() {
@@ -73,19 +66,14 @@ testable class {
       };
       |"
 
-    try {
-      expect(driver.executeScript(script)).toBe(
-        HashMap()
-          :add("logs", Array():add(["hey"]))
-          :add("errors", Array():add(["error!"]))
-      )
-    } finally {
-      driver.quit()
-    }
+    expect(driver.executeScript(script)).toBe(
+      HashMap()
+        :add("logs", Array():add(["hey"]))
+        :add("errors", Array():add(["error!"]))
+    )
   }
 
   async test `can create execute basic script and capture two lines of output from stdout and stderr`() {
-    let driver = Selenium.getDriver(Browser.CHROME)
     let script = "|
       const logs = [];
       console.log = function() {
@@ -105,44 +93,35 @@ testable class {
       };
       |"
 
-    try {
-      expect(driver.executeScript(script)).toBe(
-        HashMap()
-          :add(
-            "logs",
-            Array()
-              :add(["hey"])
-              :add(["hey2", 3])
-          )
-          :add(
-            "errors",
-            Array()
-              :add(["error!"])
-              :add(["error2!", false])
-          )
-      )
-    } finally {
-      driver.quit()
-    }
+    expect(driver.executeScript(script)).toBe(
+      HashMap()
+        :add(
+          "logs",
+          Array()
+            :add(["hey"])
+            :add(["hey2", 3])
+        )
+        :add(
+          "errors",
+          Array()
+            :add(["error!"])
+            :add(["error2!", false])
+        )
+    )
   }
 
   async test `fails to access node runtime globals`() {
-    let driver = Selenium.getDriver(Browser.CHROME)
     let script = "|
       const env = process.env;
       return 5;
       |"
     let errorMessage = "javascript error: process is not defined"
 
-    try {
-      expectAsync({ driver.executeScript(script) })
-        .toThrowWithMessage(WebDriverException.class)
-        .toBeTrue(
-          { _.startsWith(errorMessage) },
-          { "Invalid error message \"#{_}\" expected to start with \"#{errorMessage}\"" }
-        )
-    } finally {
-      driver.quit()
-    }
+    expectAsync({ driver.executeScript(script) })
+      .toThrowWithMessage(WebDriverException.class)
+      .toBeTrue(
+        { _.startsWith(errorMessage) },
+        { "Invalid error message \"#{_}\" expected to start with \"#{errorMessage}\"" }
+      )
   }
 }
