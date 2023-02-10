@@ -13,11 +13,11 @@ testable class {
     driver.quit()
   }
 
-  async test `can create execute basic script and get the return value`() {
+  async test `can execute basic script and get the return value`() {
     expect(driver.executeScript("return 2")).toBe(2)
   }
 
-  async test `can create execute basic script and capture single line of output`() {
+  async test `can execute basic script and capture single line of output`() {
     let script = "|
       const logs = [];
       console.log = function() {
@@ -30,7 +30,7 @@ testable class {
     expect(driver.executeScript(script)).toBe(Array():add(["hey"]))
   }
 
-  async test `can create execute basic script and capture two lines of output`() {
+  async test `can execute basic script and capture two lines of output`() {
     let script = "|
       const logs = [];
       console.log = function() {
@@ -48,7 +48,7 @@ testable class {
     )
   }
 
-  async test `can create execute basic script and capture single line of output from stdout and stderr`() {
+  async test `can execute basic script and capture single line of output from stdout and stderr`() {
     let script = "|
       const logs = [];
       console.log = function() {
@@ -73,7 +73,7 @@ testable class {
     )
   }
 
-  async test `can create execute basic script and capture two lines of output from stdout and stderr`() {
+  async test `can execute basic script and capture two lines of output from stdout and stderr`() {
     let script = "|
       const logs = [];
       console.log = function() {
