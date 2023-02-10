@@ -81,19 +81,31 @@ class {
 
   public async executeScript<TOut>(String script) -> TOut => null {
     native var Object data
+    native_array native var Char[] errorData
 
     external {
-      #{data} = await #{nodeDriver}.executeScript(#{script.chars.data});
-      return #{HashMap.fromJsonValue(data)};
+      try {
+        #{data} = await #{nodeDriver}.executeScript(#{script.chars.data});
+        return #{HashMap.fromJsonValue(data)};
+      } catch (e) {
+        #{errorData} = e.message || "";
+        #{throw WebDriverException(String(errorData))};
+      }
     }
   }
 
   public async executeScriptAsync<TOut>(String script) -> TOut {
     native var Object data
+    native_array native var Char[] errorData
 
     external {
-      #{data} = await #{nodeDriver}.executeAsyncScript(#{script.chars.data});
-      return #{HashMap.fromJsonValue(data)};
+      try {
+        #{data} = await #{nodeDriver}.executeAsyncScript(#{script.chars.data});
+        return #{HashMap.fromJsonValue(data)};
+      } catch (e) {
+        #{errorData} = e.message || "";
+        #{throw WebDriverException(String(errorData))};
+      }
     }
   }
 

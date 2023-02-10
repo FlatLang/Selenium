@@ -125,4 +125,24 @@ testable class {
       driver.quit()
     }
   }
+
+  async test `fails to access node runtime globals`() {
+    let driver = Selenium.getDriver(Browser.CHROME)
+    let script = "|
+      const env = process.env;
+      return 5;
+      |"
+    let errorMessage = "javascript error: process is not defined"
+
+    try {
+      expectAsync({ driver.executeScript(script) })
+        .toThrowWithMessage(WebDriverException.class)
+        .toBeTrue(
+          { _.startsWith(errorMessage) },
+          { "Invalid error message \"#{_}\" expected to start with \"#{errorMessage}\"" }
+        )
+    } finally {
+      driver.quit()
+    }
+  }
 }
