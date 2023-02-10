@@ -1,0 +1,29 @@
+{
+  "name": "Selenium",
+  "version": "0.1.0",
+  "description": "Selenium Web Driver",
+  "author": "Braden Steffaniak",
+  "license": "ISC",
+  "defaultTarget": "es6",
+  "scripts": {
+    "test": "node dist/es6/test.js"
+  },
+  "sources": {
+    "main": {
+      "source": "src",
+      "dependencies": {
+        "github:FlatLang/System": "master",
+        "github:FlatLang/IO": "master",
+        "github:FlatLang/Stream": "master",
+        "github:FlatLang/Datastruct": "master"
+      }
+    },
+    "test": {
+      "mainClass": "flat/selenium/Selenium_TestSuite",
+      "source": "src/**/*_Test*.flat",
+      "dependencies": {
+        "github:FlatLang/Test": "master"
+      }
+    }
+  }
+}

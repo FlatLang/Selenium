@@ -1,0 +1,128 @@
+package flat/selenium
+
+import flat/datastruct
+
+testable class {
+  async test `can create execute basic script and get the return value`() {
+    let driver = Selenium.getDriver(Browser.CHROME)
+
+    try {
+      expect(driver.executeScript("return 2")).toBe(2)
+    } finally {
+      driver.quit()
+    }
+  }
+
+  async test `can create execute basic script and capture single line of output`() {
+    let driver = Selenium.getDriver(Browser.CHROME)
+    let script = "|
+      const logs = [];
+      console.log = function() {
+        logs.push(arguments);
+      };
+      console.log('hey');
+      return logs;
+      |"
+
+    try {
+      expect(driver.executeScript(script)).toBe(Array():add(["hey"]))
+    } finally {
+      driver.quit()
+    }
+  }
+
+  async test `can create execute basic script and capture two lines of output`() {
+    let driver = Selenium.getDriver(Browser.CHROME)
+    let script = "|
+      const logs = [];
+      console.log = function() {
+        logs.push(arguments);
+      };
+      console.log('hey');
+      console.log('hey2', 3);
+      return logs;
+      |"
+
+    try {
+      expect(driver.executeScript(script)).toBe(
+        Array()
+          :add(["hey"])
+          :add(["hey2", 3])
+      )
+    } finally {
+      driver.quit()
+    }
+  }
+
+  async test `can create execute basic script and capture single line of output from stdout and stderr`() {
+    let driver = Selenium.getDriver(Browser.CHROME)
+    let script = "|
+      const logs = [];
+      console.log = function() {
+        logs.push(arguments);
+      };
+      const errors = [];
+      console.error = function() {
+        errors.push(arguments);
+      };
+      console.log('hey');
+      console.error('error!');
+      return {
+        logs: logs,
+        errors: errors
+      };
+      |"
+
+    try {
+      expect(driver.executeScript(script)).toBe(
+        HashMap()
+          :add("logs", Array():add(["hey"]))
+          :add("errors", Array():add(["error!"]))
+      )
+    } finally {
+      driver.quit()
+    }
+  }
+
+  async test `can create execute basic script and capture two lines of output from stdout and stderr`() {
+    let driver = Selenium.getDriver(Browser.CHROME)
+    let script = "|
+      const logs = [];
+      console.log = function() {
+        logs.push(arguments);
+      };
+      const errors = [];
+      console.error = function() {
+        errors.push(arguments);
+      };
+      console.log('hey');
+      console.error('error!');
+      console.log('hey2', 3);
+      console.error('error2!', false);
+      return {
+        logs: logs,
+        errors: errors
+      };
+      |"
+
+    try {
+      expect(driver.executeScript(script)).toBe(
+        HashMap()
+          :add(
+            "logs",
+            Array()
+              :add(["hey"])
+              :add(["hey2", 3])
+          )
+          :add(
+            "errors",
+            Array()
+              :add(["error!"])
+              :add(["error2!", false])
+          )
+      )
+    } finally {
+      driver.quit()
+    }
+  }
+}
