@@ -3,162 +3,162 @@ package flat/selenium
 import flat/datastruct
 
 class {
-  native var Object nodeDriver
+    native var Object nodeDriver
 
-  public static async build(Int browser, Bool headless = true) -> WebDriver {
-    let driver = WebDriver()
+    public static async build(Int browser, Bool headless = true) -> WebDriver {
+        let driver = WebDriver()
 
-    external {
-      const chromeOptions = new (#{SeleniumGlobal.chrome}).Options();
-      const firefoxOptions = new (#{SeleniumGlobal.firefox}).Options();
+        external {
+            const chromeOptions = new (#{SeleniumGlobal.chrome}).Options();
+            const firefoxOptions = new (#{SeleniumGlobal.firefox}).Options();
 
-      [chromeOptions, firefoxOptions].forEach((options) => {
-        if (#{headless}) {
-          options.addArguments("--headless");
+            [chromeOptions, firefoxOptions].forEach((options) => {
+                if (#{headless}) {
+                    options.addArguments("--headless");
+                }
+            })
         }
-      })
+
+        match browser {
+            Browser.CHROME => {
+                external {
+                    #{driver.nodeDriver} = await (new (#{SeleniumGlobal.builder}))
+                        .forBrowser(#{SeleniumGlobal.browser}.CHROME)
+                        .setChromeOptions(chromeOptions)
+                        .setFirefoxOptions(firefoxOptions)
+                        .build();
+                }
+            }
+            Browser.FIREFOX => {
+                external {
+                    #{driver.nodeDriver} = await (new (#{SeleniumGlobal.builder}))
+                        .forBrowser(#{SeleniumGlobal.browser}.FIREFOX)
+                        .setChromeOptions(chromeOptions)
+                        .setFirefoxOptions(firefoxOptions)
+                        .build();
+                }
+            }
+            Browser.SAFARI => {
+                external {
+                    #{driver.nodeDriver} = await (new (#{SeleniumGlobal.builder}))
+                        .forBrowser(#{SeleniumGlobal.browser}.SAFARI)
+                        .setChromeOptions(chromeOptions)
+                        .setFirefoxOptions(firefoxOptions)
+                        .build();
+                }
+            }
+            Browser.INTERNET_EXPLORER => {
+                external {
+                    #{driver.nodeDriver} = await (new (#{SeleniumGlobal.builder}))
+                        .forBrowser(#{SeleniumGlobal.browser}.INTERNET_EXPLORER)
+                        .setChromeOptions(chromeOptions)
+                        .setFirefoxOptions(firefoxOptions)
+                        .build();
+                }
+            }
+            Browser.EDGE => {
+                external {
+                    #{driver.nodeDriver} = await (new (#{SeleniumGlobal.builder}))
+                        .forBrowser(#{SeleniumGlobal.browser}.EDGE)
+                        .setChromeOptions(chromeOptions)
+                        .setFirefoxOptions(firefoxOptions)
+                        .build();
+                }
+            }
+            Browser.OPERA => {
+                external {
+                    #{driver.nodeDriver} = await (new (#{SeleniumGlobal.builder}))
+                        .forBrowser(#{SeleniumGlobal.browser}.OPERA)
+                        .setChromeOptions(chromeOptions)
+                        .setFirefoxOptions(firefoxOptions)
+                        .build();
+                }
+            }
+        }
+
+        return driver
     }
 
-    match browser {
-      Browser.CHROME => {
+    public async executeScript<TOut>(String script) -> TOut => null {
+        native var Object data
+        native_array native var Char[] errorData
+
         external {
-          #{driver.nodeDriver} = await (new (#{SeleniumGlobal.builder}))
-            .forBrowser(#{SeleniumGlobal.browser}.CHROME)
-            .setChromeOptions(chromeOptions)
-            .setFirefoxOptions(firefoxOptions)
-            .build();
+            try {
+                #{data} = await #{nodeDriver}.executeScript(#{script.chars.data});
+                return #{HashMap.fromJsonValue(data)};
+            } catch (e) {
+                #{errorData} = e.message || "";
+                #{throw WebDriverException(String(errorData))};
+            }
         }
-      }
-      Browser.FIREFOX => {
-        external {
-          #{driver.nodeDriver} = await (new (#{SeleniumGlobal.builder}))
-            .forBrowser(#{SeleniumGlobal.browser}.FIREFOX)
-            .setChromeOptions(chromeOptions)
-            .setFirefoxOptions(firefoxOptions)
-            .build();
-        }
-      }
-      Browser.SAFARI => {
-        external {
-          #{driver.nodeDriver} = await (new (#{SeleniumGlobal.builder}))
-            .forBrowser(#{SeleniumGlobal.browser}.SAFARI)
-            .setChromeOptions(chromeOptions)
-            .setFirefoxOptions(firefoxOptions)
-            .build();
-        }
-      }
-      Browser.INTERNET_EXPLORER => {
-        external {
-          #{driver.nodeDriver} = await (new (#{SeleniumGlobal.builder}))
-            .forBrowser(#{SeleniumGlobal.browser}.INTERNET_EXPLORER)
-            .setChromeOptions(chromeOptions)
-            .setFirefoxOptions(firefoxOptions)
-            .build();
-        }
-      }
-      Browser.EDGE => {
-        external {
-          #{driver.nodeDriver} = await (new (#{SeleniumGlobal.builder}))
-            .forBrowser(#{SeleniumGlobal.browser}.EDGE)
-            .setChromeOptions(chromeOptions)
-            .setFirefoxOptions(firefoxOptions)
-            .build();
-        }
-      }
-      Browser.OPERA => {
-        external {
-          #{driver.nodeDriver} = await (new (#{SeleniumGlobal.builder}))
-            .forBrowser(#{SeleniumGlobal.browser}.OPERA)
-            .setChromeOptions(chromeOptions)
-            .setFirefoxOptions(firefoxOptions)
-            .build();
-        }
-      }
     }
 
-    return driver
-  }
+    public async executeScriptAsync<TOut>(String script) -> TOut {
+        native var Object data
+        native_array native var Char[] errorData
 
-  public async executeScript<TOut>(String script) -> TOut => null {
-    native var Object data
-    native_array native var Char[] errorData
-
-    external {
-      try {
-        #{data} = await #{nodeDriver}.executeScript(#{script.chars.data});
-        return #{HashMap.fromJsonValue(data)};
-      } catch (e) {
-        #{errorData} = e.message || "";
-        #{throw WebDriverException(String(errorData))};
-      }
-    }
-  }
-
-  public async executeScriptAsync<TOut>(String script) -> TOut {
-    native var Object data
-    native_array native var Char[] errorData
-
-    external {
-      try {
-        #{data} = await #{nodeDriver}.executeAsyncScript(#{script.chars.data});
-        return #{HashMap.fromJsonValue(data)};
-      } catch (e) {
-        #{errorData} = e.message || "";
-        #{throw WebDriverException(String(errorData))};
-      }
-    }
-  }
-
-  public async quit() {
-    external {
-      await #{nodeDriver}.quit();
-    }
-  }
-
-  public static class SeleniumGlobal {
-    external type SeleniumWebDriver
-    visible static lazy SeleniumWebDriver seleniumWebDriver {
-      get {
         external {
-          return require('selenium-webdriver');
+            try {
+                #{data} = await #{nodeDriver}.executeAsyncScript(#{script.chars.data});
+                return #{HashMap.fromJsonValue(data)};
+            } catch (e) {
+                #{errorData} = e.message || "";
+                #{throw WebDriverException(String(errorData))};
+            }
         }
-      }
     }
 
-    external type ChromeSeleniumWebDriver
-    visible static lazy ChromeSeleniumWebDriver chrome {
-      get {
+    public async quit() {
         external {
-          return require('selenium-webdriver/chrome');
+            await #{nodeDriver}.quit();
         }
-      }
     }
 
-    external type FireFoxSeleniumWebDriver
-    visible static lazy FireFoxSeleniumWebDriver firefox {
-      get {
-        external {
-          return require('selenium-webdriver/firefox');
+    public static class SeleniumGlobal {
+        external type SeleniumWebDriver
+        visible static lazy SeleniumWebDriver seleniumWebDriver {
+            get {
+                external {
+                    return require('selenium-webdriver');
+                }
+            }
         }
-      }
-    }
 
-    external type Builder
-    visible static Builder builder {
-      get {
-        external {
-          return #{seleniumWebDriver}.Builder;
+        external type ChromeSeleniumWebDriver
+        visible static lazy ChromeSeleniumWebDriver chrome {
+            get {
+                external {
+                    return require('selenium-webdriver/chrome');
+                }
+            }
         }
-      }
-    }
 
-    external type Browser
-    visible static Browser browser {
-      get {
-        external {
-          return #{seleniumWebDriver}.Browser;
+        external type FireFoxSeleniumWebDriver
+        visible static lazy FireFoxSeleniumWebDriver firefox {
+            get {
+                external {
+                    return require('selenium-webdriver/firefox');
+                }
+            }
         }
-      }
+
+        external type Builder
+        visible static Builder builder {
+            get {
+                external {
+                    return #{seleniumWebDriver}.Builder;
+                }
+            }
+        }
+
+        external type Browser
+        visible static Browser browser {
+            get {
+                external {
+                    return #{seleniumWebDriver}.Browser;
+                }
+            }
+        }
     }
-  }
 }
