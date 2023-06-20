@@ -15,7 +15,8 @@
         "https://github.com/FlatLang/System.git": "master",
         "https://github.com/FlatLang/IO.git": "master",
         "https://github.com/FlatLang/Stream.git": "master",
-        "https://github.com/FlatLang/Datastruct.git": "master"
+        "https://github.com/FlatLang/Datastruct.git": "master",
+        "https://github.com/FlatLang/NodeImport.git": "master"
       }
     },
     "test": {

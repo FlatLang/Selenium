@@ -2,6 +2,8 @@ package flat/selenium
 
 import flat/datastruct
 
+import static flat/node/import/Import
+
 class {
     native var Object nodeDriver
 
@@ -116,48 +118,19 @@ class {
     }
 
     public static class SeleniumGlobal {
-        external type SeleniumWebDriver
-        visible static lazy SeleniumWebDriver seleniumWebDriver {
-            get {
-                external {
-                    return require('selenium-webdriver');
-                }
-            }
-        }
+        visible static native Object seleniumWebDriver
+        visible static native Object chrome
+        visible static native Object firefox
+        visible static native Object builder
+        visible static native Object browser
 
-        external type ChromeSeleniumWebDriver
-        visible static lazy ChromeSeleniumWebDriver chrome {
-            get {
-                external {
-                    return require('selenium-webdriver/chrome');
-                }
-            }
-        }
-
-        external type FireFoxSeleniumWebDriver
-        visible static lazy FireFoxSeleniumWebDriver firefox {
-            get {
-                external {
-                    return require('selenium-webdriver/firefox');
-                }
-            }
-        }
-
-        external type Builder
-        visible static Builder builder {
-            get {
-                external {
-                    return #{seleniumWebDriver}.Builder;
-                }
-            }
-        }
-
-        external type Browser
-        visible static Browser browser {
-            get {
-                external {
-                    return #{seleniumWebDriver}.Browser;
-                }
+        async static {
+            seleniumWebDriver = import("selenium-webdriver")
+            chrome = import("selenium-webdriver/chrome.js")
+            firefox = import("selenium-webdriver/firefox.js")
+            external {
+                #{builder} = #{seleniumWebDriver}.Builder;
+                #{browser} = #{seleniumWebDriver}.Browser;
             }
         }
     }
